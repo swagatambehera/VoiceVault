@@ -1,0 +1,74 @@
+# ============================================================
+# VoiceVault — SIH26104 Python Dependencies
+# Python 3.12.10  |  CUDA 12.8  |  NVIDIA RTX 3050 (4 GiB)
+# ============================================================
+# Install command (run from project root inside venv):
+#   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+#   pip install -r requirements.txt
+# ============================================================
+
+# ──────────────────────────────────────────────────────────
+# 1. NUMERICAL / SCIENTIFIC
+# ──────────────────────────────────────────────────────────
+numpy>=1.26,<3.0          # array ops, FFT
+scipy>=1.12               # signal processing helpers
+
+# ──────────────────────────────────────────────────────────
+# 2. AUDIO I/O & PROCESSING
+# ──────────────────────────────────────────────────────────
+soundfile>=0.12           # libsndfile-based WAV/FLAC/OGG read-write
+librosa>=0.10             # audio analysis, mel spec, MFCC, pitch
+audioread>=3.0            # multi-backend audio decoding (librosa dep)
+# webrtcvad>=2.0.10       # Google WebRTC VAD — requires C++ Build Tools on Windows
+#                          # WINDOWS ALTERNATIVE: pip install webrtcvad-wheels
+#                          # If neither is available, preprocessing.py uses energy-based VAD fallback
+# webrtcvad-wheels         # Pre-built Windows wheels for WebRTC VAD (Python 3.12 compatible)
+
+# ──────────────────────────────────────────────────────────
+# 3. MACHINE LEARNING (PyTorch installed separately via CUDA wheel)
+#    torch, torchaudio, torchvision — installed via:
+#    pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu128
+# ──────────────────────────────────────────────────────────
+scikit-learn>=1.4         # metrics, preprocessing, cross-validation
+
+# ──────────────────────────────────────────────────────────
+# 4. VISUALIZATION
+# ──────────────────────────────────────────────────────────
+matplotlib>=3.8           # waveform, spectrogram, training curves
+seaborn>=0.13             # confusion matrix heatmaps, distributions
+
+# ──────────────────────────────────────────────────────────
+# 5. JUPYTER / NOTEBOOKS
+# ──────────────────────────────────────────────────────────
+jupyter>=1.0              # Jupyter Lab/Notebook
+ipywidgets>=8.0           # interactive widgets in notebooks
+ipython>=8.0              # enhanced REPL
+
+# ──────────────────────────────────────────────────────────
+# 6. API (Phase 10 — installed now so API skeleton can be scaffolded)
+# ──────────────────────────────────────────────────────────
+fastapi>=0.111            # async REST API framework
+uvicorn[standard]>=0.29   # ASGI server with WebSocket support
+python-multipart>=0.0.9   # multipart/form-data file uploads
+pydantic>=2.7             # request/response validation and settings
+
+# ──────────────────────────────────────────────────────────
+# 7. CONFIGURATION
+# ──────────────────────────────────────────────────────────
+pyyaml>=6.0               # YAML config loading
+python-dotenv>=1.0        # .env file support
+
+# ──────────────────────────────────────────────────────────
+# 8. UTILITIES
+# ──────────────────────────────────────────────────────────
+tqdm>=4.66                # progress bars in training loops
+loguru>=0.7               # structured, colored logging
+click>=8.1                # CLI tools for training scripts
+rich>=13.0                # pretty terminal output
+
+# ──────────────────────────────────────────────────────────
+# 9. TESTING
+# ──────────────────────────────────────────────────────────
+pytest>=8.0
+pytest-asyncio>=0.23      # async FastAPI test support
+httpx>=0.27               # async HTTP client for FastAPI tests
