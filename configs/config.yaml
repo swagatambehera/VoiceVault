@@ -1,0 +1,174 @@
+# ============================================================
+# VoiceVault — Master Configuration
+# SIH26104 | Phase 1 defaults
+# ============================================================
+# ALL thresholds are INITIAL engineering defaults.
+# These MUST be calibrated against validation data once the
+# dataset (ASVspoof 2019 LA) is available.
+# ============================================================
+
+# ──────────────────────────────────────────────────────────
+# AUDIO PIPELINE
+# ──────────────────────────────────────────────────────────
+audio:
+  # Target sampling rate for all models in this project.
+  # WHY 16 kHz: ASVspoof 2019 LA is distributed at 16 kHz.
+  # Most anti-spoofing and speaker-verification models are
+  # trained at 16 kHz. Downsampling from higher rates is
+  # lossless for speech-relevant frequencies (< 8 kHz).
+  target_sr: 16000
+
+  # Maximum audio duration accepted per request (seconds).
+  # Prevents abuse; can be raised for streaming.
+  max_duration_sec: 30
+
+  # Audio chunk configuration for streaming/near-real-time.
+  # chunk_sec: length of each chunk sent to the inference model.
+  # hop_sec: how far to advance before the next chunk (overlap = chunk - hop).
+  chunk_sec: 3.0
+  hop_sec: 1.0
+
+# ──────────────────────────────────────────────────────────
+# FEATURE EXTRACTION
+# ──────────────────────────────────────────────────────────
+features:
+  # n_fft: FFT window size (samples).
+  # WHY 1024: at 16 kHz, 1024 samples ≈ 64 ms — good frequency
+  # resolution for speech (captures formant structure) without
+  # being too coarse temporally.
+  n_fft: 1024
+
+  # hop_length: step between consecutive STFT frames (samples).
+  # WHY 256: 256/16000 ≈ 16 ms — standard frame step for speech.
+  # Overlap of (1024-256)/1024 ≈ 75% retains temporal continuity.
+  hop_length: 256
+
+  # win_length: analysis window length. Usually equals n_fft.
+  win_length: 1024
+
+  # n_mels: number of Mel filter banks.
+  # WHY 80: industry standard for speech tasks (matches Whisper,
+  # most ASVspoof baselines, and transformer speech models).
+  n_mels: 80
+
+  # n_mfcc: number of MFCC coefficients to keep.
+  # WHY 40: common choice; captures spectral shape while
+  # discarding fine detail noise.
+  n_mfcc: 40
+
+  # fmin/fmax: frequency range for Mel filter banks.
+  # fmin=0: include DC component; fmax = Nyquist (sr/2).
+  fmin: 0.0
+  fmax: 8000.0  # = target_sr / 2
+
+# ──────────────────────────────────────────────────────────
+# VAD (Voice Activity Detection)
+# ──────────────────────────────────────────────────────────
+vad:
+  # WebRTC VAD aggressiveness: 0 (least) to 3 (most aggressive).
+  # Higher = more speech frames filtered out (more false negatives).
+  # Lower = more non-speech frames kept (more false positives).
+  # 2 is a balanced default; calibrate for telephone audio later.
+  aggressiveness: 2
+
+  # Frame duration (ms) for WebRTC VAD. Must be 10, 20, or 30.
+  frame_duration_ms: 20
+
+# ──────────────────────────────────────────────────────────
+# BASELINE CNN DEEPFAKE DETECTOR
+# ──────────────────────────────────────────────────────────
+model:
+  baseline_cnn:
+    # Input: 1-channel Mel spectrogram (n_mels × time_frames)
+    in_channels: 1
+    num_classes: 2   # 0 = bonafide, 1 = spoof
+
+    # Training hyperparameters — INITIAL defaults.
+    # Must be tuned on ASVspoof 2019 LA validation set.
+    batch_size: 32
+    learning_rate: 0.0001
+    weight_decay: 0.0001
+    epochs: 30
+    random_seed: 42
+    num_workers: 4
+
+    # Fixed time dimension for Mel spectrogram inputs.
+    # WHY fixed: CNN expects fixed-size tensors.
+    # 3 sec × 16000 Hz / 256 hop ≈ 188 frames; pad/truncate to 188.
+    fixed_time_frames: 188
+
+    # Checkpoint directory
+    checkpoint_dir: models/baseline
+
+# ──────────────────────────────────────────────────────────
+# RISK ENGINE
+# ──────────────────────────────────────────────────────────
+risk:
+  # Signal weights for final risk score.
+  # IMPORTANT: These are INITIAL guesses.
+  # Must be calibrated using validation data.
+  # Sum must equal 1.0.
+  weights:
+    deepfake: 0.45     # Primary anti-spoofing signal
+    speaker:  0.30     # Speaker similarity (verification)
+    prosody:  0.10     # Prosodic anomaly
+    context:  0.15     # Transaction/contextual risk
+
+  # Risk-level thresholds (0–100 scale).
+  # INITIAL engineering defaults — not production calibrated.
+  thresholds:
+    low_max:      30   # 0–30     → LOW
+    medium_max:   60   # 31–60    → MEDIUM
+    high_max:     80   # 61–80    → HIGH
+                       # 81–100   → CRITICAL
+
+# ──────────────────────────────────────────────────────────
+# ALERT & DECISION
+# ──────────────────────────────────────────────────────────
+alerts:
+  # Risk score at which an alert is generated.
+  alert_threshold: 61
+
+  # Risk score at which a transaction HOLD is triggered.
+  hold_threshold: 61
+
+  # Risk score at which CRITICAL escalation is triggered.
+  critical_threshold: 81
+
+# ──────────────────────────────────────────────────────────
+# SPEAKER VERIFICATION
+# ──────────────────────────────────────────────────────────
+speaker:
+  # Cosine similarity threshold for speaker match.
+  # PLACEHOLDER — calibrate using EER on validation data.
+  similarity_threshold: 0.75
+
+  # Minimum enrollment recordings per speaker.
+  min_enrollment_samples: 3
+
+# ──────────────────────────────────────────────────────────
+# DATA PATHS
+# ──────────────────────────────────────────────────────────
+data:
+  asvspoof2019_root: data/asvspoof2019/LA
+  demo_genuine:      data/demo/genuine
+  demo_spoof:        data/demo/spoof
+  processed:         data/processed
+  metadata:          data/metadata
+
+# ──────────────────────────────────────────────────────────
+# API
+# ──────────────────────────────────────────────────────────
+api:
+  host: 0.0.0.0
+  port: 8000
+  max_upload_size_mb: 50
+  allowed_audio_formats: [wav, flac, mp3, ogg, m4a]
+
+# ──────────────────────────────────────────────────────────
+# LOGGING
+# ──────────────────────────────────────────────────────────
+logging:
+  level: INFO
+  log_dir: logs
+  rotation: "10 MB"
