@@ -93,7 +93,7 @@ pytest tests/test_audio_pipeline.py -v
 
 ```bash
 # 1. Register at: https://datasharing.ed.ac.uk/
-# 2. Download LA_train.zip, LA_dev.zip, LA_eval.zip
+# 2. Download LA.zip
 # 3. Extract to: data/asvspoof2019/LA/
 # 4. Run dataset verification: python scripts/verify_dataset.py  [Phase 4]
 ```
