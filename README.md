@@ -44,7 +44,7 @@ SECONDARY VERIFICATION (callback, MFA, supervisor approval)
 | 1 | `src/features.py` — FFT/STFT/Mel/MFCC | ✅ COMPLETE |
 | 1 | `configs/config.yaml` — Configuration | ✅ COMPLETE |
 | 1 | `tests/test_audio_pipeline.py` — Unit tests | ✅ COMPLETE |
-| 2 | Dataset loader (ASVspoof 2019 LA) | ⏳ Awaiting dataset download |
+| 2 | Dataset loader (ASVspoof 2019 LA) | 🟢 DOWNLOADED & EXTRACTED — Loader pending |
 | 3 | Jupyter notebooks (01–03) | ⏳ Next |
 | 4 | PyTorch Dataset/DataLoader | ⏳ Phase 4 |
 | 5 | Baseline CNN deepfake detector | ⏳ Phase 5 |
