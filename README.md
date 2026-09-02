@@ -45,7 +45,7 @@ SECONDARY VERIFICATION (callback, MFA, supervisor approval)
 | 1 | `configs/config.yaml` — Configuration | ✅ COMPLETE |
 | 1 | `tests/test_audio_pipeline.py` — Unit tests | ✅ COMPLETE |
 | 2 | Dataset loader (ASVspoof 2019 LA) | ✅ COMPLETE |
-| 3 | Jupyter notebooks (01–03) | ⏳ Next |
+| 3 | Jupyter notebooks (01–03) | 🟡 ONGOING |
 | 4 | PyTorch Dataset/DataLoader | ⏳ Phase 4 |
 | 5 | Baseline CNN deepfake detector | ⏳ Phase 5 |
 | 6 | Speaker verification | ⏳ Phase 6 |
